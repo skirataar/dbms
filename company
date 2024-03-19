@@ -56,11 +56,11 @@ insert into employee values(30,"apprameya","m","bangalore","male",650000,null,nu
 insert into employee values(100,"robert","scott","bidar","male",500000,null,null);
 insert into employee values(98,"ram","a","tumkur","male",500000,null,null);
 
-insert into department values(1,"finance",49,"2024-08-31");
-insert into department values(2,"sales",56,"2003-05-05");
+insert into department values(1,"finance",14,"2024-08-31");
+insert into department values(2,"sales",30,"2003-05-05");
 insert into department values(3,"marketing",100,"2006-12-22");
 insert into department values(4,"research",98,"2020-10-15");
-insert into department values(5,"accounts",35,"2003-02-16");
+insert into department values(5,"accounts",25,"2003-02-16");
 
 update employee set dno = 5 where ssn=25;
 update employee set dno = 5 where ssn=14;
