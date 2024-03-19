@@ -77,14 +77,14 @@ insert into programme values(1004,"mandya","manday");
 
 insert into card values(25);
 insert into card values(14);
-insert into card values(56);
+insert into card values(46);
 insert into card values(49);
 insert into card values(8);
 
 insert into booklending values(1,100,25,"2024-01-30","2024-01-05");
 insert into booklending values(2,101,25,"2024-01-30","2024-01-05");
 insert into booklending values(3,102,25,"2024-02-29","2024-01-10");
-insert into booklending values(4,1003,56,"2024-02-02","2024-01-20");
+insert into booklending values(4,1003,46,"2024-02-02","2024-01-20");
 insert into booklending values(5,1004,8,"2024-02-28","2024-01-30");
 
 
