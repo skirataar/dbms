@@ -27,7 +27,7 @@ create table subject(
 	credits int
 );
 
-create table IAMarks(
+create table iamarks(
 	usn varchar(20),
 	subcode varchar(20),
 	ssid varchar(20),
@@ -104,12 +104,12 @@ group by ss.sem,ss.sec,s.gender
 order by sem;
 
 3.
-create view 1rn21cs049test1 as
+create view 1rn21cs025test1 as
 select test1,subcode
 from iamarks
-where usn="1RN21CS049";
+where usn="1RN21CS025";
 
-select * from 1rn21cs049test1;
+select * from 1rn21cs025test1;
 
 4.
 update iamarks 
