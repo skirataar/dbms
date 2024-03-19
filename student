@@ -1,0 +1,129 @@
+create table student(
+	usn varchar(20) primary key,
+	sname varchar(20),
+	address varchar(20),
+	phone int(10),
+	gender varchar(20)
+);
+
+create table semsec(	
+	ssid varchar(20) primary key,
+	sem int,
+	sec varchar(1)
+);
+
+create table class(
+	usn varchar(20),
+	ssid varchar(20),
+	primary key(usn,ssid),
+	constraint fk1 foreign key(usn) references student(usn),
+	constraint fk2 foreign key(ssid) references semsec(ssid)
+);
+
+create table subject(
+	subcode varchar(20) primary key, 
+	title varchar(20),
+	sem int,
+	credits int
+);
+
+create table IAMarks(
+	usn varchar(20),
+	subcode varchar(20),
+	ssid varchar(20),
+	test1 int,
+	test2 int,
+	test3 int,
+	finalIA int,
+	primary key(usn,subcode,ssid),
+	constraint fk3 foreign key(usn) references student(usn),
+	constraint fk4 foreign key(subcode) references subject(subcode),
+	constraint fk5 foreign key(ssid) references semsec(ssid)
+);
+	
+
+insert into student values
+("1RN21CS025","Ankith G","Bangalore",829616,"male"),
+("1RN21CS014","Aditya J","Bangalore",9876543,"male"),
+("1RN21CS046","Chinmayi U","Bangalore",8976541,"female"),
+("1RN21CS001","Rama","Nagarbhavi",8976541,"male"),
+("1RN21CS002","Sita","Nagarbhavi",89765432,"female"),	
+("1RN21CS003","parvathi","Gottigere",98765432,"female"),
+("1RN21CS004","Pusphavathi","bidar",92020213,"female");
+
+
+
+insert into semsec values("CSE8A",8,"A"),
+("CSE8B",8,"B"),
+("CSE7A",7,"A"),
+("CSE7B",7,"B"),
+("CSE6A",6,"A"),
+("CSE5A",5,"A"),
+("CSE4A",4,"A"),
+("CSE3A",3,"A"),
+("CSE2A",2,"A"),
+("CSE1A",1,"A");
+
+insert into class values
+("1RN21CS025","CSE5A"),
+("1RN21CS001","CSE5A"),
+("1RN21CS046","CSE4A"),
+("1RN21CS003","CSE4A"),
+("1RN21CS002","CSE2A"),
+("1RN21CS004","CSE2A");
+
+
+insert into subject values
+("21cs51","ATCD",5,4),
+("21cs41","coa",4,4),
+("21cs31","Os",3,4),
+("21cs21","chemistry",2,4),
+("21cs11","physics",1,4),
+("21cs61","ds",6,4),
+("21cs71","MES",7,4),
+("21CS52","CN",5,4),
+("21CS53","CDBMS",5,4);
+
+insert into iamarks values
+("1RN21CS025","21CS51","CSE5A",15,16,18,NULL),
+("1RN21CS002","21CS51","CSE5A",20,18,17,NULL),
+("1RN21CS025","21CS52","CSE5A",17,18,19,NULL),
+("1RN21CS025","21CS53","CSE5A",12,13,14,NULL);
+
+1.
+select s.usn,sname,address,phone,sem,sec
+from student s,semsec ss,class c
+where c.usn=s.usn and ss.ssid=c.ssid and ss.sem=4
+and ss.sec='A';
+
+2.
+select ss.sem,ss.sec,s.gender,count(s.gender) as count
+from semsec ss ,class c,student s
+where c.usn=s.usn and c.ssid=ss.ssid
+group by ss.sem,ss.sec,s.gender
+order by sem;
+
+3.
+create view 1rn21cs049test1 as
+select test1,subcode
+from iamarks
+where usn="1RN21CS049";
+
+select * from 1rn21cs049test1;
+
+4.
+update iamarks 
+set finalIA=(test1+test2+test3-least(test1,test2,test3))/2
+where usn is not NULL;
+
+select * from iamarks;
+
+5.
+select m.usn,m.subcode,m.finalIA,
+	case 
+		when(finalIA<=20 and finalIA>=17) then 'outstanding'
+		when(finalIA<=16 and finalIA>=12) then 'average'
+		else 'weak'
+	end as CAT
+from iamarks m,semsec ss,class c
+where c.ssid=ss.ssid and c.usn=m.usn and sem=5;
