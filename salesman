@@ -1,0 +1,94 @@
+#create 
+
+create table salesman(
+	salesmanid int primary key,
+	name varchar(30),
+	city varchar(10),
+	commission int
+);
+
+create table customer(
+	customerid int primary key,
+	custname varchar(30),
+	city varchar(30),
+	grade int,
+	salesmanid int,
+	constraint fk1 foreign key(salesmanid) references salesman(salesmanid) on delete set null
+);
+
+create table orders(
+	ordno int primary key,
+	orddte date,
+	purchaseamt float,
+	customerid int,
+	salesmanid int,
+	constraint fk2 foreign key(customerid) references customer(customerid) on delete cascade,
+	constraint fk3 foreign key(salesmanid) references salesman(salesmanid) on delete cascade
+);
+
+#insert 
+
+insert into salesman values(1000,"ram","bangalore",2000);
+insert into salesman values(2000,"ravi","davangere",1000);
+insert into salesman values(3000,"raj","mysore",3000);
+insert into salesman values(4000,"sita","kolar",2000);
+insert into salesman values(5000,"sam","delhi",1500);
+
+insert into customer values(100,"ankith","bangalore",20,1000);
+insert into customer values(200,"aditya","bangalore",10,1000);
+insert into customer values(300,"chinmayi","bangalore",12,2000);
+insert into customer values(400,"appu","bangalore",8,4000);
+insert into customer values(500,"mahishasura","mysore",5,3000);
+
+insert into orders values(1010,"2024-02-16",20000,100,1000);
+insert into orders values(1020,"2024-02-16",15000,200,1000);
+insert into orders values(1030,"2024-01-30",10000,300,2000);
+insert into orders values(1040,"2024-01-28",50000,400,2000);
+insert into orders values(1050,"2024-01-02",25000,500,3000);
+
+#q1
+
+select customerid,custname,grade
+from customer
+where grade >
+	(select avg(grade)
+	from customer
+	where city = "bangalore");
+
+#q2
+
+select salesmanid,name
+from salesman s
+where 1 < 
+	(select count(*)
+	from customer c
+	where c.salesmanid = s.salesmanid);
+
+#q3
+
+(select s.salesmanid,s.name,c.custname
+from customer c,salesman s
+where s.salesmanid = s.salesmanid)
+union
+(select s.salesmanid,s.name,"no match"
+from salesman s
+where city not in
+	(select city
+	from customer));
+
+#q4
+
+create view highestorder as
+select o.orddte,s.salesmanid,s.name
+from salesman s,orders o
+where s.salesmanid = o.salesmanid and purchaseamt = (select max(purchaseamt)
+						     from orders ord
+						      where o.orddte = ord.orddte);
+select * from highestorder;
+
+#q5
+
+delete from salesman
+where salesmanid = 1000;
+
+select * from customer;
