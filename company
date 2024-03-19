@@ -1,0 +1,128 @@
+create table employee(
+	ssn int,
+	name varchar(30) not null,
+	lname varchar(20),
+	address varchar(40),
+	sex varchar(10),
+	salary int,
+	superssn int,
+	dno int,
+	constraint pk1 primary key(ssn),
+	constraint fk3 foreign key(superssn) references employee(ssn)
+);
+
+create table department(
+	dno int,
+	dname varchar(20) not null,
+	mgrssn int,
+	mgrstartdate date,
+	constraint pk2 primary key(dno),
+	constraint fk1 foreign key (mgrssn) references employee(ssn)
+);
+
+
+alter table employee add constraint fk2 foreign key(dno) references department(dno);
+
+create table dlocation(
+	dno int,
+	dloc varchar(30),
+	constraint pk3 primary key(dno,dloc),
+	constraint fk4 foreign key (dno) references department(dno)
+);
+
+create table project(
+	dno int,
+	dname varchar(30) not null,
+	dlocation varchar(40),
+	pno int,
+	constraint pk4 primary key(pno),
+	constraint fk5 foreign key(dno) references department(dno)
+);
+
+create table workon(
+	ssn int,
+	pno int,
+	hours int,
+	constraint pk5 primary key(ssn,pno),
+	constraint fk6	foreign key(ssn) references employee(ssn),
+	constraint fk7 foreign key(pno) references project(pno)
+);
+
+#insert 
+
+insert into employee values(25,"ankith","g","bangalore","male",700000,null,null);
+insert into employee values(14,"aditya","j","bangalore","male",650000,null,null);
+insert into employee values(30,"apprameya","m","bangalore","male",650000,null,null);
+insert into employee values(100,"robert","scott","bidar","male",500000,null,null);
+insert into employee values(98,"ram","a","tumkur","male",500000,null,null);
+
+insert into department values(1,"finance",49,"2024-08-31");
+insert into department values(2,"sales",56,"2003-05-05");
+insert into department values(3,"marketing",100,"2006-12-22");
+insert into department values(4,"research",98,"2020-10-15");
+insert into department values(5,"accounts",35,"2003-02-16");
+
+update employee set dno = 5 where ssn=25;
+update employee set dno = 5 where ssn=14;
+update employee set superssn = 25, dno = 1 where ssn = 30;
+update employee set superssn = 14, dno = 2 where ssn = 100;
+update employee set superssn = 25, dno = 3 where ssn = 98;
+
+insert into dlocation values(1,"ground floor");
+insert into dlocation values(2,"first floor");
+insert into dlocation values(3,"second floor");
+insert into dlocation values(4,"basement floor");
+insert into dlocation values(5,"third floor");
+
+insert into project values(1,"ai","block 1",10);
+insert into project values(1,"ml","block 2",11);
+insert into project values(2,"blockchain","block 3",12);
+insert into project values(3,"cybersecurity","block 4",13);
+insert into project values(4,"iot","block 5",14);
+
+insert into workon values(25,10,14);
+insert into workon values(14,14,12);
+insert into workon values(30,10,20);
+insert into workon values(98,13,7);
+insert into workon values(100,12,2);
+
+#q1
+
+(select distinct (p.pno)
+from project p,department d,employee e
+where p.dno=d.dno and d.mgrssn = e.ssn and e.lname="scott")
+union
+(select distinct(p.pno)
+from project p,workon w,employee e
+where p.pno = w.pno and w.ssn=e.ssn and e.lname="scott");
+
+#q2
+
+select e.name ,0.1*e.salary+e.salary increased_salary
+from project p ,employee e, workon w
+where p.pno = w.pno and w.ssn = e.ssn and p.dname = "iot";
+
+#q3
+
+select sum(salary) total_salary,min(salary) min_salary,max(salary) max_salary,avg(salary) avg_salary 
+from employee e,department d 
+where e.dno = d.dno and d.dname = "accounts";
+
+#q4
+SELECT E.NAME, E.LNAME
+FROM EMPLOYEE E
+WHERE NOT EXISTS((SELECT PNO
+FROM PROJECT
+WHERE DNO='')
+EXCEPT(SELECT PNO
+FROM WORKON
+WHERE E.SSN=SSN));
+
+#q5
+select d.dno,count(*)
+from employee e,department d
+where d.dno and e.salary > 600000 and d.dno in (select dno 
+						from employee 
+						group by dno
+						having count(*)>1)
+group by dno;
