@@ -1,0 +1,135 @@
+create table book(
+	bookid int primary key,
+	title varchar(30) not null,
+	pubname varchar(30),
+	pubyear int
+);
+
+create table bookauthor(	
+	bookid int,
+	authorname varchar(30),
+	constraint pk1 primary key(bookid,authorname),
+	constraint fk1 foreign key(bookid) references book(bookid) on delete cascade
+);
+
+create table publisher(
+	name varchar(30) primary key,
+	address varchar(40),
+	phone varchar(10)
+);
+
+create table bookcopies(
+	bookid int,
+	programmeid int,
+	noofcopies int not null,
+	constraint pk2 primary key(bookid,programmeid),
+	constraint fk2 foreign key (bookid) references book(bookid) on delete cascade
+);
+
+create table booklending(
+	bookid int,
+	programmeid int,
+	cardno int,
+	duedate date not null,
+	dateout date not null,
+	constraint pk3 primary key (bookid,programmeid,cardno)
+);
+
+create table programme(
+	programmeid int primary key,
+	pragrammename varchar(20),
+	address varchar(40)
+);
+
+create table card(
+	cardno int primary key
+);
+
+alter table book add constraint fk3 foreign key(pubname) references publisher(name) on delete cascade;
+
+alter table bookcopies add constraint fk4 foreign key(programmeid) references programme(programmeid) on delete cascade;
+
+alter table booklending add constraint fk5 foreign key(bookid) references book(bookid) on delete cascade;
+
+alter table booklending add constraint fk6 foreign key(programmeid) references programme(programmeid) on delete cascade;
+
+alter table booklending add constraint fk7 foreign key(cardno) references card(cardno) on delete cascade;
+
+#insert
+
+insert into book values(1,"dbms","ankith",2015);
+insert into book values(2,"ds","aditya",2001);
+insert into book values(3,"py","abhiram",2020);
+insert into book values(4,"java","chimayi",2023);
+insert into book values(5,"c","ravan",2017);
+
+insert into bookauthor values(1,"avinash");
+insert into bookauthor values(2,"ankith");
+insert into bookauthor values(3,"dhanush");
+insert into bookauthor values(4,"ram");
+insert into bookauthor values(5,"sita");
+
+insert into programme values(100,"channasandra","bangalore");
+insert into programme values(101,"nagarbhavi","bangalore");
+insert into programme values(102,"bhadravathi","shivamogga");
+insert into programme values(1003,"kgf","kolar");
+insert into programme values(1004,"mandya","manday");
+
+insert into card values(25);
+insert into card values(14);
+insert into card values(56);
+insert into card values(49);
+insert into card values(8);
+
+insert into booklending values(1,100,25,"2024-01-30","2024-01-05");
+insert into booklending values(2,101,25,"2024-01-30","2024-01-05");
+insert into booklending values(3,102,25,"2024-02-29","2024-01-10");
+insert into booklending values(4,1003,56,"2024-02-02","2024-01-20");
+insert into booklending values(5,1004,8,"2024-02-28","2024-01-30");
+
+
+insert into publisher values("ankith","bangalore",1234567890);
+insert into publisher values("aditya","bangalore",1234567890);
+insert into publisher values("abhiram","bangalore",1234567890);
+insert into publisher values("chinmayi","bangalore",1234567890);
+insert into publisher values("ravan","bangalore",1234567890);
+
+insert into bookcopies values(1,100,25);
+insert into bookcopies values(2,101,30);
+insert into bookcopies values(3,102,40);
+insert into bookcopies values(4,1003,40);
+insert into bookcopies values(5,1004,50);
+
+#q1
+
+select b.bookid,b.title,b.pubname,a.authorname,c.noofcopies,l.programmeid
+from book b,bookauthor a,bookcopies c,programme l
+where b.bookid = a.bookid and b.bookid = c.bookid and c.programmeid = l.programmeid;
+
+#q2
+
+select cardno 
+from booklending 
+where dateout between "2024-01-01" and "2024-01-31"
+group by cardno
+having count(*)>2;
+
+#q3
+
+delete from book
+where bookid = 5;
+
+#q4
+
+create view publication as 
+select pubyear 
+from book;
+select * from publication;
+
+#q5
+
+create view bookdetails as 
+select b.bookid,b.title,c.noofcopies
+from book b,bookcopies c,programme p
+where b.bookid = c.bookid and c.programmeid = p.programmeid;
+select * from bookdetails;
