@@ -1,0 +1,128 @@
+create table actor(
+	actid int primary key,
+	actname varchar(20),
+	gender varchar(10)
+);
+
+create table director(
+	dirid int primary key,
+	dirname varchar(20),
+	phone int
+);
+
+create table movies(
+	moiveid int primary key,
+	title varchar(20),
+	year int,
+	lang varchar(20),
+	dirid int,
+	constraint fk1 foreign key(dirid) references director(dirid)
+);
+
+create table moviecast(
+	actid int,
+	movieid int,
+	role varchar(20),
+	primary key(actid,movieid),
+	constraint fk2 foreign key(actid) references actor(actid),
+	constraint fk3 foreign key(movieid) references movies(moiveid)
+);
+
+create table rating(
+	movieid int,
+	revstar int,
+	primary key(movieid,revstar),
+	constraint fk4 foreign key(movieid) references movies(moiveid)
+);
+
+
+insert into actor values
+(30,"appu","male"),
+(36,"ayush","male"),
+(56,"chinamyi","female"),
+(60,"rama","male"),
+(70,"sita","female");
+
+insert into director values
+(100,"dilip",123456),
+(101,"abhiram",23467),
+(102,"aravind",345678),
+(105,"hitchock", 123456),
+(106,"steven", 456789),
+(103,"ankith",45678),
+(104,"aditya",56789);
+
+insert into movies values
+(1000,"kgf",2019,"kannada",100),
+(1001,"bahubali",2019,"kannada",100),
+(1002,"animal",2019,"hindi",105),
+(1003,"war",2019,"hindi",103),
+(1004,"ranna",2019,"kannada",104);
+
+
+insert into moviecast values
+(25,1000,"hero"),
+(25,1003,"hero"),
+(70,1004,"heroine"),
+(36,1001,"hero"),
+(56,1002,"hero"),
+(60,1004,"hero"),
+(60,1000,"guest");
+
+insert into rating values
+(1000,10),
+(1000,9),
+(1003,8),
+(1001,9),
+(1003,9),
+(1004,8);
+
+
+1.
+select m.title
+from director d,movies m
+where d.dirid = m.dirid and d.dirname = "hitchock";
+
+2.
+select m.title
+from movies m,moviecast mc
+where m.moiveid = mc.movieid and mc.actid in 
+			( select actid 
+			  from moviecast
+		   	   group by actid
+			   having count(*)>1)
+group by title
+having count(*)>1;
+
+3.
+select distinct(actname)
+from actor a,moviecast mc,movies m
+join moviecast  on a.actid = mc.actid
+join movies  on m.moiveid = mc.movieid
+where m.year >= 2015
+intersect 
+select distinct(actname)
+from actor a,moviecast mc,movies m
+join moviecast  on a.actid = mc.actid
+join movies  on m.moiveid = mc.movieid
+where m.year <= 2000;
+
+4.
+select m.title, max(r.revstar) as max_revstar
+from movies m
+inner join rating r on m.moiveid = r.movieid
+group by m.title
+having max(r.revstar) > 0
+order by m.title;
+
+5.
+update rating 
+set revstar = 5
+where movieid in ( 
+    select m.moiveid
+    from movies m
+    join director d on m.dirid = d.dirid
+    where d.dirname = 'steven'
+);
+
+select * from rating;
